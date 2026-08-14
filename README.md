@@ -1,31 +1,34 @@
 # dsh-find-plugin [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
-Find DeepSeek Harness plugins without leaving the agent. / 在会话里直接搜索、发现 DSH 插件。
+English | [中文](README.zh.md)
+
+Find DeepSeek Harness plugins without leaving the agent.
 
 Registers a `find_dsh_plugin` tool: a live GitHub search over the public
 `dsh-plugin` topic, ranked by stars. Ask the agent for a capability ("notify
-me on WeChat when a task finishes", "找个终端 TUI"), and it returns matching
-plugins with install commands. Results also listed on
-[awesome-dsh-plugin](https://awesome-dsh-plugin.com) use its bilingual
-descriptions.
+me on WeChat when a task finishes"), and it returns matching plugins with
+install commands.
 
-## Install / 安装
+## Install
 
 ```sh
-# from npm (prebuilt / 预构建，推荐)
+# from npm (prebuilt, recommended)
 dsh plugin --profile web add dsh-find-plugin
 
 # or from GitHub
 dsh plugin --profile web add github:awesome-dsh-plugin/dsh-find-plugin
 ```
 
-## How it works / 工作方式
+## How it works
 
-- Data comes from the public registry `https://awesome-dsh-plugin.com/plugins.json`
-  (1-hour in-memory cache, bundled snapshot as offline fallback).
-- Search is a simple token scorer over names, owners, categories, and bilingual
-  descriptions — the agent does the actual recommending.
-- Categories: `ui` · `session` · `tools` · `workflow` · `notify` · `dev` · `fun`.
+- Live GitHub repository search scoped to the official `dsh-plugin` topic,
+  re-ranked by stars (5-minute per-query cache, anonymous API).
+- When a result is also listed on
+  [awesome-dsh-plugin](https://awesome-dsh-plugin.com), its hand-written
+  bilingual description from `plugins.json` replaces the GitHub one (the
+  `lang` parameter picks the language) — ranking is untouched.
+- Every result comes with a ready-to-run `dsh plugin add` command. Plugins
+  are third-party code — review the source and pin a commit.
 
 ## License
 

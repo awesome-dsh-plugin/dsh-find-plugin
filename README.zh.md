@@ -1,0 +1,32 @@
+# dsh-find-plugin [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
+
+[English](README.md) | 中文
+
+在会话里直接搜索、发现 DSH 插件。
+
+注册 `find_dsh_plugin` 工具：实时搜索 GitHub 上打了官方 `dsh-plugin` topic
+的仓库，按 star 数排序。直接向 agent 描述你想要的能力（比如"任务完成时发
+微信通知我"），它会返回匹配的插件和安装命令。
+
+## 安装
+
+```sh
+# npm 包（预构建，推荐）
+dsh plugin --profile web add dsh-find-plugin
+
+# 或从 GitHub 安装
+dsh plugin --profile web add github:awesome-dsh-plugin/dsh-find-plugin
+```
+
+## 工作方式
+
+- 实时搜索打了官方 `dsh-plugin` topic 的 GitHub 仓库，按 star 数降序
+  （每查询 5 分钟缓存，匿名 API）。
+- 命中 [awesome-dsh-plugin](https://awesome-dsh-plugin.com) 精选列表的仓库，
+  会换用列表中人工撰写的双语描述（`lang` 参数选择语言），排序不受影响。
+- 每条结果附可直接执行的 `dsh plugin add` 安装命令；插件均为第三方代码，
+  请自行审阅源码并锁定 commit。
+
+## 许可
+
+MIT © awesome-dsh-plugin

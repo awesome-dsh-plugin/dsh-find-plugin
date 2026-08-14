@@ -1,6 +1,6 @@
 {
   "name": "dsh-find-plugin",
-  "description": "Find DSH plugins from the curated awesome-dsh-plugin registry — search and recommendations inside the agent.",
+  "description": "Find DeepSeek Harness plugins inside the agent — live GitHub dsh-plugin topic search, ranked by stars.",
   "version": "0.3.0",
   "type": "module",
   "main": "lib/index.js",
