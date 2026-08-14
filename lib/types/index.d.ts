@@ -1,10 +1,10 @@
 /**
- * dsh-find-plugin — find DSH plugins from the curated awesome-dsh-plugin
- * registry, inside the agent.
+ * dsh-find-plugin — find DSH plugins inside the agent.
  *
- * Registers the `find_dsh_plugin` tool. Results come in two tiers:
- * curated (entries from the hand-maintained list) and community (live
- * GitHub `dsh-plugin` topic search, outside the list).
+ * Registers the `find_dsh_plugin` tool: a live GitHub search over the
+ * public `dsh-plugin` topic, ranked by stars. When a result is also on
+ * the awesome-dsh-plugin curated list, its bilingual description is used
+ * and it carries a [curated] marker — ranking is unaffected.
  */
 import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "dsh-find-plugin";
