@@ -1,6 +1,6 @@
 /**
  * Community tier: live GitHub search over the public `dsh-plugin` topic.
- * These results are NOT curated — callers must label them as unverified.
+ * These results are outside the curated list — callers must label them so.
  * Unauthenticated search allows 10 req/min; a per-query cache keeps a local
  * tool well under that.
  */

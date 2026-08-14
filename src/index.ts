@@ -3,8 +3,8 @@
  * registry, inside the agent.
  *
  * Registers the `find_dsh_plugin` tool. Results come in two tiers:
- * curated (human-verified registry entries) and community (live GitHub
- * `dsh-plugin` topic search, unverified).
+ * curated (entries from the hand-maintained list) and community (live
+ * GitHub `dsh-plugin` topic search, outside the list).
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -88,7 +88,7 @@ export function apply(ctx: Context): void {
       scope: {
         type: 'string',
         description:
-          "'curated' searches only the verified registry; 'all' always adds the GitHub community tier. " +
+          "'curated' searches only the curated list; 'all' always adds the GitHub community tier. " +
           "Default: community tier is added only when curated results are sparse.",
       },
     },

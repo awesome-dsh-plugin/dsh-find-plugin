@@ -3,8 +3,8 @@
  * registry, inside the agent.
  *
  * Registers the `find_dsh_plugin` tool. Results come in two tiers:
- * curated (human-verified registry entries) and community (live GitHub
- * `dsh-plugin` topic search, unverified).
+ * curated (entries from the hand-maintained list) and community (live
+ * GitHub `dsh-plugin` topic search, outside the list).
  */
 import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "dsh-find-plugin";
