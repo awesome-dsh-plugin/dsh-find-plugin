@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-**A plugin that finds plugins.**
+**A plugin that finds plugins** — think [`/find-skills`](https://skills.sh) from skills.sh, for DSH.
 
 Tell your agent what you want ("notify me on WeChat when a task finishes"),
 and it searches the DSH plugin ecosystem on GitHub for you — top results by

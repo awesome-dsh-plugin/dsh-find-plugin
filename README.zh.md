@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-**一个用来找插件的插件。**
+**一个用来找插件的插件**——就像 skills.sh 的 [`/find-skills`](https://skills.sh)，DSH 版。
 
 想要什么能力，直接跟 agent 说（比如"任务完成时给我发微信通知"），它就去
 GitHub 上的 DSH 插件生态里帮你搜——按 star 排序，每条带一句话说明和安装
