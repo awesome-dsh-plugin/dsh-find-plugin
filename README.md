@@ -2,12 +2,11 @@
 
 English | [中文](README.zh.md)
 
-Find DeepSeek Harness plugins without leaving the agent.
+**A plugin that finds plugins.**
 
-Registers a `find_dsh_plugin` tool: a live GitHub search over the public
-`dsh-plugin` topic, ranked by stars. Ask the agent for a capability ("notify
-me on WeChat when a task finishes"), and it returns matching plugins with
-install commands.
+Tell your agent what you want ("notify me on WeChat when a task finishes"),
+and it searches the DSH plugin ecosystem on GitHub for you — top results by
+stars, each with a one-line description and an install command.
 
 ![find_dsh_plugin in action](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-en.png)
 

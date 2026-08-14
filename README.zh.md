@@ -2,11 +2,11 @@
 
 [English](README.md) | 中文
 
-在会话里直接搜索、发现 DSH 插件。
+**一个用来找插件的插件。**
 
-注册 `find_dsh_plugin` 工具：实时搜索 GitHub 上打了官方 `dsh-plugin` topic
-的仓库，按 star 数排序。直接向 agent 描述你想要的能力（比如"任务完成时发
-微信通知我"），它会返回匹配的插件和安装命令。
+想要什么能力，直接跟 agent 说（比如"任务完成时给我发微信通知"），它就去
+GitHub 上的 DSH 插件生态里帮你搜——按 star 排序，每条带一句话说明和安装
+命令。
 
 ![find_dsh_plugin 实际效果](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-zh.png)
 
