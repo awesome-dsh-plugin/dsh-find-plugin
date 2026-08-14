@@ -1,4 +1,4 @@
-# dsh-find-plugin
+# dsh-find-plugin [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 Find DeepSeek Harness plugins without leaving the agent. / 在会话里直接搜索、发现 DSH 插件。
 
