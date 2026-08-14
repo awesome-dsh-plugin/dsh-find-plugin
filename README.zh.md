@@ -8,7 +8,7 @@
 GitHub 上的 DSH 插件生态里帮你搜——按 star 排序，每条带一句话说明和安装
 命令。
 
-![find_dsh_plugin 实际效果](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-zh.png)
+<img src="https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-zh.png" alt="find_dsh_plugin 实际效果" width="640">
 
 ## 安装
 

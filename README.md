@@ -8,7 +8,7 @@ Tell your agent what you want ("notify me on WeChat when a task finishes"),
 and it searches the DSH plugin ecosystem on GitHub for you — top results by
 stars, each with a one-line description and an install command.
 
-![find_dsh_plugin in action](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-en.png)
+<img src="https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-en.png" alt="find_dsh_plugin in action" width="640">
 
 ## Install
 
