@@ -11,6 +11,10 @@ commands.
 ## Install / 安装
 
 ```sh
+# from npm (prebuilt / 预构建，推荐)
+dsh plugin --profile web add dsh-find-plugin
+
+# or from GitHub
 dsh plugin --profile web add github:awesome-dsh-plugin/dsh-find-plugin
 ```
 
