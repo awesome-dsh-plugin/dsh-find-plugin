@@ -9,6 +9,8 @@ Registers a `find_dsh_plugin` tool: a live GitHub search over the public
 me on WeChat when a task finishes"), and it returns matching plugins with
 install commands.
 
+![find_dsh_plugin in action](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-en.png)
+
 ## Install
 
 ```sh
@@ -18,6 +20,19 @@ dsh plugin --profile web add dsh-find-plugin
 # or from GitHub
 dsh plugin --profile web add github:awesome-dsh-plugin/dsh-find-plugin
 ```
+
+## Usage
+
+Restart `dsh web` after installing, then just talk to the agent — it calls
+`find_dsh_plugin` on its own whenever plugin discovery helps:
+
+- "What terminal TUI plugins are there?"
+- "I want to get a WeChat notification when a task finishes — any plugin for that?"
+- "Find me something for reviewing git diffs inside DSH."
+
+Each result comes back with stars, a description, the repo link, and a
+ready-to-run `dsh plugin add` command — ask the agent to install one and
+it can run the command for you.
 
 ## How it works
 

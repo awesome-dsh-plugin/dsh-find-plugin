@@ -8,6 +8,8 @@
 的仓库，按 star 数排序。直接向 agent 描述你想要的能力（比如"任务完成时发
 微信通知我"），它会返回匹配的插件和安装命令。
 
+![find_dsh_plugin 实际效果](https://raw.githubusercontent.com/awesome-dsh-plugin/dsh-find-plugin/main/assets/demo-zh.png)
+
 ## 安装
 
 ```sh
@@ -17,6 +19,18 @@ dsh plugin --profile web add dsh-find-plugin
 # 或从 GitHub 安装
 dsh plugin --profile web add github:awesome-dsh-plugin/dsh-find-plugin
 ```
+
+## 使用
+
+安装后重启 `dsh web`，然后直接跟 agent 对话即可——需要找插件时它会自己调用
+`find_dsh_plugin`：
+
+- "有什么终端 TUI 插件？"
+- "我想任务完成时收到微信通知，有插件吗？"
+- "找个能在 DSH 里做 git diff 审查的东西。"
+
+每条结果都带 star 数、功能描述、仓库链接和可直接执行的 `dsh plugin add`
+安装命令——让 agent 帮你装，它可以直接替你执行。
 
 ## 工作方式
 
