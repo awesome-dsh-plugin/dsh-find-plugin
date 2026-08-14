@@ -3,8 +3,8 @@
  *
  * Registers the `find_dsh_plugin` tool: a live GitHub search over the
  * public `dsh-plugin` topic, ranked by stars. When a result is also on
- * the awesome-dsh-plugin curated list, its bilingual description is used
- * and it carries a [curated] marker — ranking is unaffected.
+ * the awesome-dsh-plugin curated list, its bilingual description is used —
+ * ranking and presentation are otherwise untouched.
  */
 import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "dsh-find-plugin";

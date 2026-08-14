@@ -3,8 +3,8 @@
  *
  * Registers the `find_dsh_plugin` tool: a live GitHub search over the
  * public `dsh-plugin` topic, ranked by stars. When a result is also on
- * the awesome-dsh-plugin curated list, its bilingual description is used
- * and it carries a [curated] marker — ranking is unaffected.
+ * the awesome-dsh-plugin curated list, its bilingual description is used —
+ * ranking and presentation are otherwise untouched.
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -20,7 +20,6 @@ type FindItem = {
   url: string
   description: string
   stars: number
-  curated: boolean
   install: string
 }
 
@@ -34,7 +33,7 @@ function renderText(result: FindResult): string {
     return 'No matching plugins found. Try broader keywords, or browse https://awesome-dsh-plugin.com'
   }
   const lines = result.results.map((m, i) =>
-    `${i + 1}. ${m.name} ★${m.stars}${m.curated ? ' [curated]' : ''} — ${m.description}\n   ${m.url}\n   install: ${m.install}`,
+    `${i + 1}. ${m.name} ★${m.stars} — ${m.description}\n   ${m.url}\n   install: ${m.install}`,
   )
   return lines.join('\n\n') + (result.note ? `\n\n${result.note}` : '')
 }
@@ -44,8 +43,7 @@ export function apply(ctx: Context): void {
     name: 'find_dsh_plugin',
     description:
       'Search GitHub for DeepSeek Harness plugins (public `dsh-plugin` topic), ranked by stars. Returns ' +
-      'descriptions and ready-to-run `dsh plugin add` install commands; entries also on the awesome-dsh-plugin ' +
-      'curated list are marked [curated] and carry bilingual descriptions. Use when the user wants a capability ' +
+      'descriptions and ready-to-run `dsh plugin add` install commands. Use when the user wants a capability ' +
       'DSH does not currently have, or asks what plugins exist. Plugins are third-party code — advise reviewing ' +
       'the source and pinning a commit.',
     parameters: {
@@ -88,13 +86,12 @@ export function apply(ctx: Context): void {
             url: c.url,
             description: desc ? (desc[args.lang ?? 'en'] ?? desc.en ?? c.description) : c.description,
             stars: c.stars,
-            curated: desc !== undefined,
             install: c.install,
           }
         })
 
       const note = results.length > 0
-        ? 'Live GitHub `dsh-plugin` topic search, ranked by stars. [curated] entries are on awesome-dsh-plugin.com. All plugins are third-party code — review the source and pin a commit when installing.'
+        ? 'Live GitHub `dsh-plugin` topic search, ranked by stars. All plugins are third-party code — review the source and pin a commit when installing. Browse the curated list at https://awesome-dsh-plugin.com'
         : ''
       return { results, note } satisfies FindResult
     },
