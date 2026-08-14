@@ -52,5 +52,8 @@
     "@deepseek-ai/dsh-tools": "^0.0.1-rc.1",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
