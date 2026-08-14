@@ -6,7 +6,10 @@
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
   "license": "MIT",
-  "repository": "github:awesome-dsh-plugin/dsh-find-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awesome-dsh-plugin/dsh-find-plugin.git"
+  },
   "keywords": ["deepseek", "harness", "dsh", "dsh-plugin", "search", "discovery"],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
