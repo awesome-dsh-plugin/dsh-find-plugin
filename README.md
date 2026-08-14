@@ -3,10 +3,10 @@
 Find DeepSeek Harness plugins without leaving the agent. / 在会话里直接搜索、发现 DSH 插件。
 
 Registers a `find_dsh_plugin` tool backed by the curated
-[awesome-dsh-plugin](https://awesome-dsh-plugin.com) registry — every entry is
-human-verified. Ask the agent for a capability ("notify me on WeChat when a
-task finishes", "找个终端 TUI"), and it returns matching plugins with install
-commands.
+[awesome-dsh-plugin](https://awesome-dsh-plugin.com) list, with a live GitHub
+`dsh-plugin` topic search as a community fallback. Ask the agent for a
+capability ("notify me on WeChat when a task finishes", "找个终端 TUI"), and it
+returns matching plugins with install commands.
 
 ## Install / 安装
 

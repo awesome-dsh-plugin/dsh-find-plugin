@@ -41,13 +41,13 @@ type FindResult = {
 function renderText(result: FindResult): string {
   const parts: string[] = []
   if (result.curated.length > 0) {
-    parts.push('Curated (verified):')
+    parts.push('From the curated list (awesome-dsh-plugin):')
     parts.push(...result.curated.map(
       (m, i) => `${i + 1}. ${m.name} [${m.category}] — ${m.description}\n   ${m.url}\n   install: ${m.install}`,
     ))
   }
   if (result.community.length > 0) {
-    parts.push('Community (unverified — review the source before installing):')
+    parts.push('More from GitHub (not in the curated list — review the source before installing):')
     parts.push(...result.community.map(
       (m, i) => `${i + 1}. ${m.name} ★${m.stars} — ${m.description}\n   ${m.url}\n   install: ${m.install}`,
     ))
@@ -62,9 +62,9 @@ export function apply(ctx: Context): void {
   ctx.tools.register(defineTool({
     name: 'find_dsh_plugin',
     description:
-      'Search for DeepSeek Harness plugins. Two tiers: curated results from the human-verified ' +
-      'awesome-dsh-plugin registry (bilingual, safe to recommend), plus community results from a live GitHub ' +
-      '`dsh-plugin` topic search (unverified — advise reviewing the source). Returns descriptions and ' +
+      'Search for DeepSeek Harness plugins. Two tiers: entries from the curated awesome-dsh-plugin list ' +
+      '(bilingual descriptions), plus community results from a live GitHub `dsh-plugin` topic search ' +
+      '(not in the curated list — advise reviewing the source). Returns descriptions and ' +
       'ready-to-run `dsh plugin add` install commands. Use when the user wants a capability DSH does not ' +
       'currently have, or asks what plugins exist. Categories: ui, session, tools, workflow, notify, dev, fun.',
     parameters: {
@@ -116,7 +116,7 @@ export function apply(ctx: Context): void {
         try {
           const curatedUrls = new Set(registry.plugins.map(p => p.url.toLowerCase()))
           community = (await searchGitHub(args.query, limit)).filter(c => !curatedUrls.has(c.url.toLowerCase()))
-          note = 'Community results are not reviewed by awesome-dsh-plugin — installing runs third-party build scripts; review the source and pin a commit.'
+          note = 'Community results come from a live GitHub topic search and are not part of the curated list. Installing runs third-party build scripts — review the source and pin a commit.'
         } catch {
           note = 'GitHub community search unavailable right now; showing curated results only.'
         }
