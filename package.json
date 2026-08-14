@@ -1,7 +1,7 @@
 {
   "name": "dsh-find-plugin",
   "description": "Find DSH plugins from the curated awesome-dsh-plugin registry — search and recommendations inside the agent.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
@@ -10,7 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/awesome-dsh-plugin/dsh-find-plugin.git"
   },
-  "keywords": ["deepseek", "harness", "dsh", "dsh-plugin", "search", "discovery"],
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "search",
+    "discovery"
+  ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -p tsconfig.json",
