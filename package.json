@@ -20,6 +20,8 @@
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "test:live": "node --test test/rate-limit.test.mjs",
     "build": "tsc -p tsconfig.json",
     "check": "npm run typecheck && npm run build",
     "prepack": "npm run build"

@@ -36,13 +36,39 @@ it can run the command for you.
 ## How it works
 
 - Live GitHub repository search scoped to the official `dsh-plugin` topic,
-  re-ranked by stars (5-minute per-query cache, anonymous API).
+  re-ranked by stars (5-minute per-query cache).
 - When a result is also listed on
   [awesome-dsh-plugin](https://awesome-dsh-plugin.com), its hand-written
   bilingual description from `plugins.json` replaces the GitHub one (the
   `lang` parameter picks the language) — ranking is untouched.
 - Every result comes with a ready-to-run `dsh plugin add` command. Plugins
   are third-party code — review the source and pin a commit.
+
+### Rate limits and offline fallback
+
+GitHub's **search** API allows only 10 requests/minute per public IP when
+unauthenticated, and that quota is shared by every host behind the same egress
+IP (carrier CGNAT, corporate NAT, …), so a search can fail with `HTTP 403` for
+reasons outside your control. The plugin therefore:
+
+- uses the **`GITHUB_TOKEN` DSH credential** when one is configured (30
+  req/min, account-scoped, immune to shared-IP exhaustion). Optional — without
+  it the tool still works, just closer to the anonymous limit;
+- retries a rate-limited (403/429) or failed request once, then degrades
+  instead of failing: it falls back to **keyword matches from the curated
+  list** and says so in the result note;
+- caches the curated list on disk (`$DSH_HOME/cache/dsh-find-plugin/`) and
+  revalidates it with `If-None-Match` / `If-Modified-Since`, so restarts and
+  offline runs use the full ~3400-entry list instead of the small bundled
+  snapshot.
+
+## Development
+
+```sh
+npm run typecheck                     # tsc --noEmit
+npm test                              # offline tests (mocked fetch)
+FINDP_LIVE=1 npm run test:live        # opt-in real-network cases
+```
 
 ## License
 
