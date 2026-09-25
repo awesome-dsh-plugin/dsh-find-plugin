@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - run: npm run build
+
+      # `lib/` is committed (the plugin is installed from git as often as from
+      # npm), so a stale build would ship source that does not match lib/.
+      - name: lib/ matches a fresh build
+        run: git diff --exit-code -- lib
+
+      - run: npm test
+
+      # Every DSH release is a prerelease, so a peer range stops matching as
+      # soon as the host moves to a new line (#4, #12). Fails the day it does.
+      - run: npm run check:peers
+
+  newest-host:
+    # The compat floor is the devDependency; this job proves the plugin still
+    # compiles and passes against the newest published host line.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm install --no-save @deepseek-ai/dsh-tools@next
+
+      - run: npm run typecheck
+
+      - run: npm test
