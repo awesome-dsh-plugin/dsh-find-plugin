@@ -53,6 +53,53 @@ export class GitHubSearchRateLimited extends Error {
   }
 }
 
+/** Proxy variables Node's fetch reads only when the host process opted in. */
+const PROXY_ENV_VARS = ['HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy'] as const
+
+/** Truthy spelling of `NODE_USE_ENV_PROXY`; anything else (including `0`) is off. */
+function envProxyOptedIn(): boolean {
+  const raw = (process.env.NODE_USE_ENV_PROXY ?? '').trim().toLowerCase()
+  return raw !== '' && raw !== '0' && raw !== 'false'
+}
+
+/**
+ * Name the real reason a request failed. Node reports every transport failure
+ * as the same `fetch failed` and hides the actionable part — DNS, refused
+ * connection, certificate, TLS — one level down in `cause`, so the chain is
+ * what a reader (and a bug report) actually needs.
+ * @param error - the thrown value.
+ * @returns `message (code) ← cause` as far as the chain goes, never empty.
+ */
+export function describeFailure(error: unknown): string {
+  const parts: string[] = []
+  let current: unknown = error
+  for (let depth = 0; depth < 4 && current instanceof Error; depth += 1) {
+    const code = (current as { code?: unknown }).code
+    const label = typeof code === 'string' && code.length > 0 && !current.message.includes(code)
+      ? `${current.message} (${code})`
+      : current.message
+    if (label.length > 0 && !parts.includes(label)) parts.push(label)
+    current = (current as { cause?: unknown }).cause
+  }
+  return parts.length === 0 ? String(error) : parts.join(' ← ')
+}
+
+/**
+ * One sentence for the trap behind most "fetch failed" reports: a system proxy
+ * (VPN accelerators, corporate MITM) is invisible to Node's fetch unless the
+ * host process was started with `NODE_USE_ENV_PROXY=1` or `--use-env-proxy` —
+ * a browser has no such rule, which is why GitHub opens fine and this still
+ * fails.
+ * @returns The sentence, or an empty string when no proxy is configured.
+ */
+function proxyHint(): string {
+  if (envProxyOptedIn()) return ''
+  const configured = PROXY_ENV_VARS.filter(name => (process.env[name] ?? '').trim().length > 0)
+  if (configured.length === 0) return ''
+  return `${configured.join('/')} is set, but Node's fetch ignores proxy environment variables unless DSH itself ` +
+    'was started with NODE_USE_ENV_PROXY=1 (or --use-env-proxy); without that, requests from DSH bypass the proxy.'
+}
+
 const OK_TTL_MS = 5 * 60 * 1000
 const FAIL_TTL_MS = 60 * 1000
 const TIMEOUT_MS = 8000
@@ -121,7 +168,8 @@ export async function searchGitHub(
         await new Promise(resolvePromise => setTimeout(resolvePromise, RETRY_DELAY_MS))
         continue
       }
-      const wrapped = new Error(`GitHub search failed: ${error instanceof Error ? error.message : String(error)}`)
+      const hint = proxyHint()
+      const wrapped = new Error(`GitHub search failed: ${describeFailure(error)}${hint === '' ? '' : `. ${hint}`}`)
       cache.set(key, { at: Date.now(), error: wrapped })
       throw wrapped
     }

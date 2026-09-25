@@ -61,6 +61,23 @@ reasons outside your control. The plugin therefore:
   revalidates it with `If-None-Match` / `If-Modified-Since`, so restarts and
   offline runs use the full ~3400-entry list instead of the small bundled
   snapshot.
+- says *why* a request failed. Node reports every transport failure as a bare
+  `fetch failed` and hides the useful part in `cause`, so the plugin surfaces
+  the chain (`fetch failed ← certificate has expired (CERT_HAS_EXPIRED)`) and
+  names the one trap that otherwise looks like a plugin bug: a system proxy or
+  VPN accelerator, which Node's `fetch` ignores unless DSH itself was started
+  with `NODE_USE_ENV_PROXY=1` (or `--use-env-proxy`). A browser has no such
+  rule — which is why GitHub opens fine and this still fails.
+
+## Compatibility
+
+DSH plugin APIs are prerelease-versioned, and node-semver only lets a
+prerelease satisfy a range that carries a prerelease on the *same*
+major.minor.patch — so a peer range pinned to one host line silently stops
+matching the next one. The declared `@deepseek-ai/dsh-tools` range therefore
+names every shipped line through `0.1.7`, and `npm run check:peers` (run in CI)
+resolves the current `latest`/`next` host lines from the registry and fails the
+day a new one is not covered.
 
 ## Development
 

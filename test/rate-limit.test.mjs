@@ -10,7 +10,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const realFetch = globalThis.fetch
@@ -282,6 +282,75 @@ test('registry: an HTTP error or a corrupt cache degrades instead of throwing', 
       assert.equal((await loadRegistry()).source, 'snapshot')
     } finally { restore() }
   })
+})
+
+// ── why a request failed, and the proxy trap behind most of those reports ───
+
+test('a transport failure reports its cause, not just "fetch failed"', async () => {
+  const { searchGitHub } = await load('github.js')
+  let calls = 0
+  globalThis.fetch = async () => {
+    calls += 1
+    throw new TypeError('fetch failed', {
+      cause: Object.assign(new Error('certificate has expired'), { code: 'CERT_HAS_EXPIRED' }),
+    })
+  }
+  try {
+    const error = await searchGitHub(`cause-${Date.now()}`, 3).then(() => null, thrown => thrown)
+    assert.ok(error !== null, 'expected the failure to surface')
+    assert.match(error.message, /GitHub search failed: fetch failed ← certificate has expired \(CERT_HAS_EXPIRED\)/)
+    assert.equal(calls, 2, 'one retry before giving up')
+  } finally { restore() }
+})
+
+test('a proxy the host will ignore is named in the failure, and not when it opted in', async () => {
+  const { searchGitHub } = await load('github.js')
+  globalThis.fetch = async () => {
+    throw new TypeError('fetch failed', { cause: Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' }) })
+  }
+  const saved = {
+    proxy: process.env.HTTPS_PROXY,
+    http: process.env.HTTP_PROXY,
+    optIn: process.env.NODE_USE_ENV_PROXY,
+  }
+  process.env.HTTPS_PROXY = 'http://127.0.0.1:7897'
+  delete process.env.HTTP_PROXY
+  delete process.env.NODE_USE_ENV_PROXY
+  try {
+    const hinted = await searchGitHub('proxy-unused', 3).then(() => null, thrown => thrown)
+    assert.match(hinted.message, /HTTPS_PROXY is set, but Node's fetch ignores proxy environment variables/)
+
+    process.env.NODE_USE_ENV_PROXY = '1'
+    const quiet = await searchGitHub('proxy-opted-in', 3).then(() => null, thrown => thrown)
+    assert.doesNotMatch(quiet.message, /HTTPS_PROXY is set/)
+  } finally {
+    restore()
+    if (saved.proxy === undefined) delete process.env.HTTPS_PROXY
+    else process.env.HTTPS_PROXY = saved.proxy
+    if (saved.http === undefined) delete process.env.HTTP_PROXY
+    else process.env.HTTP_PROXY = saved.http
+    if (saved.optIn === undefined) delete process.env.NODE_USE_ENV_PROXY
+    else process.env.NODE_USE_ENV_PROXY = saved.optIn
+  }
+})
+
+test('registry: a `~` in DSH_HOME expands to the OS home, as the host resolves it', async () => {
+  const previous = process.env.DSH_HOME
+  const name = `findp-tilde-${process.pid}-${Date.now()}`
+  process.env.DSH_HOME = `~/${name}`
+  try {
+    const { loadRegistry } = await load('registry.js')
+    globalThis.fetch = async () => json(registryFixture(), 200, { etag: 'W/"t"' })
+    try {
+      assert.equal((await loadRegistry()).source, 'live')
+      const cached = JSON.parse(await readFile(join(homedir(), name, 'cache', 'dsh-find-plugin', 'registry.json'), 'utf8'))
+      assert.equal(cached.registry.plugins.length, 2)
+    } finally { restore() }
+  } finally {
+    if (previous === undefined) delete process.env.DSH_HOME
+    else process.env.DSH_HOME = previous
+    await rm(join(homedir(), name), { recursive: true, force: true })
+  }
 })
 
 // ── opt-in live network cases ────────────────────────────────────────────────

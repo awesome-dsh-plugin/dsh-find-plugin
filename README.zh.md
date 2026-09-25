@@ -53,7 +53,22 @@ GitHub **搜索**接口在未认证时只有 **10 次/分钟/公网 IP** 的额�
   列表的关键词匹配，并在结果末尾的 note 里说明；
 - 把 curated 列表缓存到磁盘（`$DSH_HOME/cache/dsh-find-plugin/`）并用
   `If-None-Match` / `If-Modified-Since` 重新验证，因此重启和离线时用的是完整的
-  ~3400 条列表，而不是随包发布的小快照。
+  ~3400 条列表，而不是随包发布的小快照；
+- 会说明**失败原因**。Node 把所有传输层失败都统一报成 `fetch failed`，真正有用的信息
+  藏在 `cause` 里，所以插件会把整条因果链显示出来
+  （`fetch failed ← certificate has expired (CERT_HAS_EXPIRED)`），并指出那个最容易被
+  误认为插件 bug 的坑：系统代理 / VPN 加速器。Node 的 `fetch` 在 DSH 自身启动时没有
+  `NODE_USE_ENV_PROXY=1`（或 `--use-env-proxy`）的情况下**不读代理环境变量**，而浏览器
+  没有这条规则——这就是「浏览器能打开 GitHub、插件却报错」的原因。
+
+## 兼容性
+
+DSH 的插件 API 是预发布版本号，而 node-semver 规定：只有当 range 里存在与版本号
+**major.minor.patch 相同**的 prerelease 比较器时，预发布版本才算满足该 range。因此
+把 peer range 钉在某一条宿主线上，下一条线一发布就会悄悄失效。本插件声明的
+`@deepseek-ai/dsh-tools` range 覆盖到 `0.1.7` 为止的每一条已发布宿主线，CI 里的
+`npm run check:peers` 会从 registry 解析当前 `latest` / `next` 两条线，一旦覆盖不到
+就直接失败。
 
 ## 开发
 

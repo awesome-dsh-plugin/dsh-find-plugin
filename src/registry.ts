@@ -62,9 +62,16 @@ interface CacheEntry {
 
 let cache: CacheEntry | null = null
 
+/** `~` / `~/` / `~\\` against the OS home, matching the host's own expansion. */
+function expandHome(path: string): string {
+  if (path === '~') return homedir()
+  if (path.startsWith('~/') || path.startsWith('~\\')) return join(homedir(), path.slice(2))
+  return path
+}
+
 function dshHome(): string {
   const fromEnv = process.env.DSH_HOME
-  if (typeof fromEnv === 'string' && fromEnv.trim() !== '') return resolve(fromEnv.trim())
+  if (typeof fromEnv === 'string' && fromEnv.trim() !== '') return resolve(expandHome(fromEnv.trim()))
   return join(homedir(), '.dsh')
 }
 

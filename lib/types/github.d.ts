@@ -43,4 +43,13 @@ export declare class GitHubSearchRateLimited extends Error {
     readonly info: GitHubRateLimitInfo;
     constructor(message: string, info: GitHubRateLimitInfo);
 }
+/**
+ * Name the real reason a request failed. Node reports every transport failure
+ * as the same `fetch failed` and hides the actionable part — DNS, refused
+ * connection, certificate, TLS — one level down in `cause`, so the chain is
+ * what a reader (and a bug report) actually needs.
+ * @param error - the thrown value.
+ * @returns `message (code) ← cause` as far as the chain goes, never empty.
+ */
+export declare function describeFailure(error: unknown): string;
 export declare function searchGitHub(query: string, limit?: number, options?: SearchGitHubOptions): Promise<CommunityPlugin[]>;
