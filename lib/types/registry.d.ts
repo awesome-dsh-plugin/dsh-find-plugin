@@ -26,6 +26,8 @@ export interface RegistryPlugin {
     category: string;
     description: Record<string, string>;
     install: string;
+    /** npm package name when published there; absent/empty otherwise. */
+    npm?: string | null;
     added: string;
     /** Present in the live registry; used as a ranking tie-breaker. */
     stars?: number;

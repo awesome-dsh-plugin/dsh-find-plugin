@@ -24,6 +24,8 @@ export interface CommunityPlugin {
     stars: number;
     pushed: string;
     install: string;
+    /** `owner/name` — the repository identity, shown alongside the install command. */
+    repo: string;
 }
 export interface GitHubRateLimitInfo {
     status: number;

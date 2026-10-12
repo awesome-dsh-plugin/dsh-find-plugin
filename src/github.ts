@@ -25,6 +25,8 @@ export interface CommunityPlugin {
   stars: number
   pushed: string
   install: string
+  /** `owner/name` — the repository identity, shown alongside the install command. */
+  repo: string
 }
 
 export interface GitHubRateLimitInfo {
@@ -184,6 +186,7 @@ export async function searchGitHub(
         stars: Number(it.stargazers_count ?? 0),
         pushed: String(it.pushed_at ?? ''),
         install: `dsh plugin --profile web add github:${String(it.full_name ?? '')}`,
+        repo: String(it.full_name ?? ''),
       }))
       cache.set(key, { at: Date.now(), data })
       return data.slice(0, limit)

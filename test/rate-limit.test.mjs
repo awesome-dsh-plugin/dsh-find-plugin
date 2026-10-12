@@ -73,6 +73,7 @@ test('anonymous search sends no Authorization header', async () => {
     const out = await searchGitHub('anon', 5)
     assert.equal(headers.authorization, undefined)
     assert.equal(out[0].install, 'dsh plugin --profile web add github:acme/a')
+    assert.equal(out[0].repo, 'acme/a', 'the repo identity ships alongside the command')
   } finally { restore() }
 })
 

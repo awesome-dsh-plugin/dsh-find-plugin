@@ -42,6 +42,10 @@ type FindItem = {
   description: string
   stars: number
   install: string
+  /** npm package name when the plugin is published there, else empty. */
+  npm: string
+  /** `owner/name` repository identity, always present. */
+  repo: string
 }
 
 type FindResult = {
@@ -117,6 +121,8 @@ function searchCurated(registry: Registry, query: string, limit: number, lang: s
     description: truncate(pick(plugin.description), DESCRIPTION_MAX_CHARS),
     stars: Number(plugin.stars ?? 0),
     install: String(plugin.install ?? `dsh plugin --profile web add github:${plugin.owner}/${plugin.name}`),
+    npm: String(plugin.npm ?? ''),
+    repo: `${plugin.owner ?? ''}/${plugin.name ?? ''}`,
   }))
 }
 
@@ -125,9 +131,10 @@ function renderText(result: FindResult): string {
     return 'No matching plugins found. Try broader keywords, or browse https://awesome-dsh-plugin.com' +
       (result.note ? `\n\n${result.note}` : '')
   }
-  const lines = result.results.map((m, i) =>
-    `${i + 1}. ${m.name} ★${m.stars} — ${m.description}\n   ${m.url}\n   install: ${m.install}`,
-  )
+  const lines = result.results.map((m, i) => {
+    const id = m.npm !== '' ? `npm: ${m.npm}` : `repo: ${m.repo}`
+    return `${i + 1}. ${m.name} ★${m.stars} — ${m.description}\n   ${m.url}\n   install: ${m.install}\n   ${id}`
+  })
   return lines.join('\n\n') + (result.note ? `\n\n${result.note}` : '')
 }
 
@@ -136,7 +143,9 @@ export function apply(ctx: Context): void {
     name: 'find_dsh_plugin',
     description:
       'Search GitHub for DeepSeek Harness plugins (public `dsh-plugin` topic), ranked by stars. Returns ' +
-      'descriptions and ready-to-run `dsh plugin add` install commands. Use when the user wants a capability ' +
+      'descriptions, a ready-to-run `dsh plugin add` install command, and — for callers whose profile is not ' +
+      '`web`, or who prefer to install through their own channel — the npm package name when the plugin is ' +
+      'published there, otherwise its `owner/name` repository. Use when the user wants a capability ' +
       'DSH does not currently have, or asks what plugins exist. Plugins are third-party code — advise reviewing ' +
       'the source and pinning a commit. Falls back to keyword matches from the curated awesome-dsh-plugin list ' +
       'when GitHub search is rate limited or unreachable; the note states which source was used.',
@@ -175,22 +184,27 @@ export function apply(ctx: Context): void {
       // Happy path — unchanged: GitHub results, enriched with curated
       // descriptions when the same URL is on the curated list.
       if (githubError === null) {
-        const curated = new Map<string, Record<string, string>>()
+        const curated = new Map<string, { description: Record<string, string>; npm: string }>()
         try {
           const { registry } = await loadRegistry()
-          for (const p of registry.plugins) curated.set(p.url.toLowerCase(), p.description)
+          for (const p of registry.plugins) {
+            curated.set(p.url.toLowerCase(), { description: p.description, npm: String(p.npm ?? '') })
+          }
         } catch { /* registry unavailable — GitHub descriptions only */ }
 
         const results: FindItem[] = found
           .sort((a, b) => b.stars - a.stars)
           .map(c => {
-            const desc = curated.get(c.url.toLowerCase())
+            const hit = curated.get(c.url.toLowerCase())
+            const desc = hit?.description
             return {
               name: c.name,
               url: c.url,
               description: desc ? (desc[lang] ?? desc.en ?? c.description) : c.description,
               stars: c.stars,
               install: c.install,
+              npm: hit?.npm ?? '',
+              repo: c.repo,
             }
           })
         return { results, note: results.length > 0 ? LIVE_NOTE : '' } satisfies FindResult

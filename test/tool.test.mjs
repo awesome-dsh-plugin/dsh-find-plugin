@@ -20,9 +20,9 @@ const REGISTRY = {
   count: 3,
   categories: { memory: { en: 'Memory', zh: '记忆' } },
   plugins: [
-    { name: 'in-both', owner: 'acme', url: 'https://github.com/acme/in-both', category: 'memory', description: { en: 'Curated description', zh: 'curated 描述' }, install: 'dsh plugin --profile web add github:acme/in-both', added: '2026-09-01', stars: 100 },
-    { name: 'curated-only', owner: 'acme', url: 'https://github.com/acme/curated-only/', category: 'memory', description: { en: 'Only in curated', zh: '只在 curated' }, install: 'dsh plugin --profile web add github:acme/curated-only', added: '2026-09-02', stars: 5 },
-    { name: 'long-desc', owner: 'acme', url: 'https://github.com/acme/long-desc', category: 'memory', description: { en: LONG_DESCRIPTION, zh: '长描述' }, install: 'dsh plugin --profile web add github:acme/long-desc', added: '2026-09-03', stars: 1 },
+    { name: 'in-both', owner: 'acme', url: 'https://github.com/acme/in-both', category: 'memory', description: { en: 'Curated description', zh: 'curated 描述' }, npm: 'dsh-in-both', install: 'dsh plugin --profile web add github:acme/in-both', added: '2026-09-01', stars: 100 },
+    { name: 'curated-only', owner: 'acme', url: 'https://github.com/acme/curated-only/', category: 'memory', description: { en: 'Only in curated', zh: '只在 curated' }, npm: null, install: 'dsh plugin --profile web add github:acme/curated-only', added: '2026-09-02', stars: 5 },
+    { name: 'long-desc', owner: 'acme', url: 'https://github.com/acme/long-desc', category: 'memory', description: { en: LONG_DESCRIPTION, zh: '长描述' }, npm: '', install: 'dsh plugin --profile web add github:acme/long-desc', added: '2026-09-03', stars: 1 },
   ],
 }
 
@@ -76,7 +76,19 @@ test('happy path: live GitHub results, enriched with curated descriptions', asyn
   assert.deepEqual(out.results.map((r) => r.name), ['in-both', 'from-github'])
   assert.equal(out.results[0].description, 'Curated description', 'the curated bilingual description wins')
   assert.match(out.note, /Live GitHub/)
-  assert.match(render(out), /install: dsh plugin --profile web add github:acme\/in-both/)
+  assert.match(render(out), /install: dsh plugin --profile web add github:acme\/in-both/, 'the install command is still emitted')
+  assert.match(render(out), /npm: dsh-in-both/, 'the curated npm name supplements the command')
+})
+
+test('the npm name and repo identity are additive, never a replacement', async () => {
+  apply(baseCtx)
+  // 'from-github' is not on the curated list, so no npm name is known for it.
+  const out = await registered.execute({ query: 'memory baseline', limit: 5 }, undefined)
+  const ghOnly = out.results.find((r) => r.name === 'from-github')
+  assert.equal(ghOnly.npm, '', 'no npm name is invented for a GitHub-only result')
+  assert.equal(ghOnly.repo, 'acme/from-github')
+  assert.equal(ghOnly.install, 'dsh plugin --profile web add github:acme/from-github', 'the command survives for GitHub-only results too')
+  assert.match(render(out), /repo: acme\/from-github/, 'the repo identity is shown when there is no npm name')
 })
 
 test('a rate limit degrades to curated keyword matches instead of failing', async () => {
