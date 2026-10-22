@@ -75,9 +75,17 @@ DSH plugin APIs are prerelease-versioned, and node-semver only lets a
 prerelease satisfy a range that carries a prerelease on the *same*
 major.minor.patch — so a peer range pinned to one host line silently stops
 matching the next one. The declared `@deepseek-ai/dsh-tools` range therefore
-names every shipped line through `0.1.7`, and `npm run check:peers` (run in CI)
-resolves the current `latest`/`next` host lines from the registry and fails the
-day a new one is not covered.
+names every shipped line from `0.1.0-rc.6` through `0.2.x`.
+
+`npm run check:peers` (run in CI) resolves **every published host line** from
+the registry and fails the day one is not covered. It judges each line the way
+the DSH host judges a plugin's peers — `semver.satisfies(version, range, {
+includePrerelease: true })` — because a check stricter than the host would
+reject ranges the host accepts, blocking the very fix it exists to demand.
+
+Checking every published line rather than only the `latest` / `next`
+dist-tags matters: a host line can ship and be superseded before the next
+release of this plugin, and a user can still be running it.
 
 ## Development
 

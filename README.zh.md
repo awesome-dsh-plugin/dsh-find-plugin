@@ -66,9 +66,15 @@ GitHub **搜索**接口在未认证时只有 **10 次/分钟/公网 IP** 的额�
 DSH 的插件 API 是预发布版本号，而 node-semver 规定：只有当 range 里存在与版本号
 **major.minor.patch 相同**的 prerelease 比较器时，预发布版本才算满足该 range。因此
 把 peer range 钉在某一条宿主线上，下一条线一发布就会悄悄失效。本插件声明的
-`@deepseek-ai/dsh-tools` range 覆盖到 `0.1.7` 为止的每一条已发布宿主线，CI 里的
-`npm run check:peers` 会从 registry 解析当前 `latest` / `next` 两条线，一旦覆盖不到
-就直接失败。
+`@deepseek-ai/dsh-tools` range 逐条列出从 `0.1.0-rc.6` 到 `0.2.x` 的每一条已发布宿主线。
+
+CI 里的 `npm run check:peers` 会从 registry 解析**所有已发布的宿主线**，一旦有一条覆盖不到
+就直接失败。它判定每一条线的方式与 DSH 宿主判定插件 peer 的方式一致——
+`semver.satisfies(version, range, { includePrerelease: true })`——因为比宿主更严的检查会
+拒掉宿主其实接受的 range，反而挡住它本该要求的那个修复。
+
+检查所有已发布的宿主线，而不只是 `latest` / `next` 两个 dist-tag，是有意义的：一条宿主线
+可能在插件发布下一个版本之前就已经上线并被取代，而用户仍可能正在用它。
 
 ## 开发
 

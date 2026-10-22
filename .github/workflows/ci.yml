@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  # A host line can ship *after* this plugin's last release, and nothing in
+  # this repository would run `check:peers` until the next commit — which is
+  # exactly how #13 slipped through: `dsh-tools@0.2.0-rc.1` published three
+  # days after 0.4.0. The daily run turns that into a failing build instead of
+  # a user's bug report.
+  schedule:
+    - cron: '17 6 * * *'
   workflow_dispatch:
 
 permissions:
