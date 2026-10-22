@@ -318,11 +318,14 @@ test('a proxy the host will ignore is named in the failure, and not when it opte
   delete process.env.NODE_USE_ENV_PROXY
   try {
     const hinted = await searchGitHub('proxy-unused', 3).then(() => null, thrown => thrown)
-    assert.match(hinted.message, /HTTPS_PROXY is set, but Node's fetch ignores proxy environment variables/)
+    // The hint names every proxy variable that is set, and Windows environment
+    // variables are case-insensitive, so `https_proxy` reads back as set too.
+    assert.match(hinted.message, /is set, but Node's fetch ignores proxy environment variables/)
+    assert.match(hinted.message, /HTTPS_PROXY/)
 
     process.env.NODE_USE_ENV_PROXY = '1'
     const quiet = await searchGitHub('proxy-opted-in', 3).then(() => null, thrown => thrown)
-    assert.doesNotMatch(quiet.message, /HTTPS_PROXY is set/)
+    assert.doesNotMatch(quiet.message, /is set, but Node's fetch ignores proxy environment variables/)
   } finally {
     restore()
     if (saved.proxy === undefined) delete process.env.HTTPS_PROXY
