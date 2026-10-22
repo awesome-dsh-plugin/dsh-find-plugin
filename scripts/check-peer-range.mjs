@@ -30,6 +30,7 @@
 import { execFile } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 
 const run = promisify(execFile)
@@ -173,7 +174,10 @@ async function main() {
 }
 
 // Only run the check when invoked directly; the pure helpers above are
-// imported by the test suite.
-if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
+// imported by the test suite. `pathToFileURL` is the only reliable way to
+// compare against `import.meta.url` — building `file://` by hand mishandles
+// Windows drive letters and backslashes, and a guard that silently fails to
+// match would turn this gate into a silent pass.
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main()
 }
